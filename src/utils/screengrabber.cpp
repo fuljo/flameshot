@@ -88,29 +88,6 @@ void ScreenGrabber::freeDesktopPortal(bool& ok, QPixmap& res)
             QUrl uri = map.value("uri").toString();
             QString uriString = uri.toLocalFile();
             res = QPixmap(uriString);
-
-            // we calculate an approximated physical desktop geometry based on
-            // dpr(provided by qt), we calculate the logical desktop geometry
-            // later, this is the accurate size, more info:
-            // https://bugreports.qt.io/browse/QTBUG-135612
-            QRect approxPhysGeo = desktopGeometry();
-            QRect logicalGeo = logicalDesktopGeometry();
-            if (res.size() ==
-                approxPhysGeo.size()) // which means the res is physical size
-                                      // and the dpr is correct.
-            {
-                res.setDevicePixelRatio(qApp->devicePixelRatio());
-            } else if (res.size() ==
-                       logicalGeo.size()) // which means the res is logical size
-                                          // and we need to do nothing.
-            {
-                // No action needed
-            } else // which means the res is physical size and the dpr is not
-                   // correct.
-            {
-                res.setDevicePixelRatio(res.height() * 1.0f /
-                                        logicalGeo.height());
-            }
             QFile imgFile(uriString);
             imgFile.remove();
         }
@@ -136,6 +113,30 @@ void ScreenGrabber::freeDesktopPortal(bool& ok, QPixmap& res)
         ok = false;
     }
 #endif
+}
+
+void ScreenGrabber::correctWaylandDpr(QPixmap& res)
+{
+    // we calculate an approximated physical desktop geometry based on
+    // dpr(provided by qt), we calculate the logical desktop geometry
+    // later, this is the accurate size, more info:
+    // https://bugreports.qt.io/browse/QTBUG-135612
+    QRect approxPhysGeo = desktopGeometry();
+    QRect logicalGeo = logicalDesktopGeometry();
+    if (res.size() == approxPhysGeo.size()) // which means the res is physical
+                                            // size and the dpr is correct.
+    {
+        res.setDevicePixelRatio(qApp->devicePixelRatio());
+    } else if (res.size() ==
+               logicalGeo.size()) // which means the res is logical size
+                                  // and we need to do nothing.
+    {
+        // No action needed
+    } else // which means the res is physical size and the dpr is not
+           // correct.
+    {
+        res.setDevicePixelRatio(res.height() * 1.0f / logicalGeo.height());
+    }
 }
 
 QPixmap ScreenGrabber::grabEntireDesktop(bool& ok)
@@ -201,6 +202,7 @@ QPixmap ScreenGrabber::grabEntireDesktop(bool& ok)
         if (!ok) {
             AbstractLogger::error() << tr("Unable to capture screen");
         }
+        correctWaylandDpr(res);
         return res;
     }
 #endif
