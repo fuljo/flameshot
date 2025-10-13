@@ -155,7 +155,7 @@ CaptureWidget::CaptureWidget(const CaptureRequest& req,
         // desktop
         QRect desktopGeom = ScreenGrabber().desktopGeometry();
         move(desktopGeom.topLeft());
-        resize(desktopGeom.size());
+        resize(pixmap().size());
 #endif
         // Need to move to the top left screen
         QPoint topLeft(0, INT_MAX);
