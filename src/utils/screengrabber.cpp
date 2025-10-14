@@ -227,33 +227,10 @@ QPixmap ScreenGrabber::grabEntireDesktop(bool& ok)
 #endif
 }
 
-QRect ScreenGrabber::screenGeometry(QScreen* screen)
-{
-    QRect geometry;
-    if (m_info.waylandDetected()) {
-        QPoint topLeft(0, 0);
-#ifdef Q_OS_WIN
-        for (QScreen* const screen : QGuiApplication::screens()) {
-            QPoint topLeftScreen = screen->geometry().topLeft();
-            if (topLeft.x() > topLeftScreen.x() ||
-                topLeft.y() > topLeftScreen.y()) {
-                topLeft = topLeftScreen;
-            }
-        }
-#endif
-        geometry = screen->geometry();
-        geometry.moveTo(geometry.topLeft() - topLeft);
-    } else {
-        QScreen* currentScreen = QGuiAppCurrentScreen().currentScreen();
-        geometry = currentScreen->geometry();
-    }
-    return geometry;
-}
-
 QPixmap ScreenGrabber::grabScreen(QScreen* screen, bool& ok)
 {
     QPixmap p;
-    QRect geometry = screenGeometry(screen);
+    QRect geometry = screen->geometry();
     if (m_info.waylandDetected()) {
         p = grabEntireDesktop(ok);
         if (ok) {

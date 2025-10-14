@@ -162,12 +162,12 @@ void Flameshot::screen(CaptureRequest req, const int screenNumber)
     }
     QPixmap p(ScreenGrabber().grabScreen(screen, ok));
     if (ok) {
-        QRect geometry = ScreenGrabber().screenGeometry(screen);
+        QRect geometry = screen->geometry();
         QRect region = req.initialSelection();
         if (region.isNull()) {
-            region = ScreenGrabber().screenGeometry(screen);
+            region = screen->geometry();
         } else {
-            QRect screenGeom = ScreenGrabber().screenGeometry(screen);
+            QRect screenGeom = screen->geometry();
             screenGeom.moveTopLeft({ 0, 0 });
             region = region.intersected(screenGeom);
             p = p.copy(region);

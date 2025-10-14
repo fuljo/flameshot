@@ -546,7 +546,7 @@ QVariant Region::process(const QVariant& val)
         if (!ok || number < 0) {
             return {};
         }
-        return ScreenGrabber().screenGeometry(qApp->screens()[number]);
+        return qApp->screens()[number]->geometry();
     }
 
     static const QRegularExpression regex(
