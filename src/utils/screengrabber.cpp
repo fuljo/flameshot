@@ -234,7 +234,7 @@ QPixmap ScreenGrabber::grabScreen(QScreen* screen, bool& ok)
     if (m_info.waylandDetected()) {
         p = grabEntireDesktop(ok);
         if (ok) {
-            return p.copy(geometry);
+            p = copyLogicalSelection(p, geometry);
         }
     } else {
         ok = true;
@@ -270,4 +270,18 @@ QRect ScreenGrabber::logicalDesktopGeometry()
         geometry = geometry.united(scrRect);
     }
     return geometry;
+}
+
+QPixmap ScreenGrabber::copyLogicalSelection(const QPixmap& pixmap,
+                                            QRect& selection)
+{
+    if (selection.isNull()) {
+        return pixmap;
+    }
+    qreal dpr = pixmap.devicePixelRatio();
+    QRect scaledSelection =
+      QRect(selection.topLeft() * dpr, selection.bottomRight() * dpr);
+    QPixmap cropped = pixmap.copy(scaledSelection);
+    cropped.setDevicePixelRatio(dpr);
+    return cropped;
 }

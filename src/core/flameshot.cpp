@@ -170,7 +170,7 @@ void Flameshot::screen(CaptureRequest req, const int screenNumber)
             QRect screenGeom = screen->geometry();
             screenGeom.moveTopLeft({ 0, 0 });
             region = region.intersected(screenGeom);
-            p = p.copy(region);
+            p = ScreenGrabber::copyLogicalSelection(p, region);
         }
         if (req.tasks() & CaptureRequest::PIN) {
             // change geometry for pin task
@@ -192,7 +192,7 @@ void Flameshot::full(const CaptureRequest& req)
     QPixmap p(ScreenGrabber().grabEntireDesktop(ok));
     QRect region = req.initialSelection();
     if (!region.isNull()) {
-        p = p.copy(region);
+        p = ScreenGrabber::copyLogicalSelection(p, region);
     }
     if (ok) {
         QRect selection; // `flameshot full` does not support --selection

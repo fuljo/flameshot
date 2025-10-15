@@ -19,6 +19,8 @@ public:
     void generalGrimScreenshot(bool& ok, QPixmap& res);
     QRect desktopGeometry();
     QRect logicalDesktopGeometry();
+    static QPixmap copyLogicalSelection(const QPixmap& pixmap,
+                                        QRect& selection);
 
 private:
     DesktopInfo m_info;
